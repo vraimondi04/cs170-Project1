@@ -32,8 +32,8 @@ class Puzzle {
   //variables / ADTs used in relation to the puzzle and its tiles
   private:
 
-  //representation of puzzles
-  vector<vector<char> > currPuzzle; 
+  //representation of puzzle
+  vector<vector<char> > currPuzzle;
 
   //root node (where we start)
   tile* root;
@@ -65,7 +65,9 @@ class Puzzle {
   Puzzle();
 
   void makePuzzle(int userInput);
-  
+  void selectAlgorithm(int userAlgo);
+  void searchPuzzle(tile* blankTile, vector<vector<char> > currPuzzle);
+  bool checkPuzzle(vector<vector<char> > currPuzzle);
 
 };
 
