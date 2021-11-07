@@ -9,9 +9,9 @@ Puzzle::Puzzle() {
 
 //creates default or user generated puzzle
 void Puzzle::makePuzzle(int userInput) {
-
+  
   //new '*' tile
-  tile* t = NULL;
+  tile* t = new tile;
   t -> neighbor1 = NULL;
   t -> neighbor2 = NULL;
   t -> neighbor3 = NULL;
@@ -25,6 +25,8 @@ void Puzzle::makePuzzle(int userInput) {
   goalState = false;
   nodesExpanded = 0;
   nodesInQueue = 0;
+
+  
 
   //puzzle tiles - think of adjacency matrix but with vectors
   vector<char> row1;
@@ -46,6 +48,7 @@ void Puzzle::makePuzzle(int userInput) {
     row3.push_back('7');
     row3.push_back('8');
 
+    
     //CHECK IF MINHEAP IS WORKING WITH THE GREATER<TILE*>
     root = t;
     minHeap.push(root);
@@ -88,5 +91,62 @@ void Puzzle::makePuzzle(int userInput) {
   }
 
 }
+
+void Puzzle::selectAlgorithm(int userAlgo) {
+  userSearch = userAlgo;
+
+  //would prefer to start this recursive function call in main but the root is a private member of puzzle
+  searchPuzzle(root, currPuzzle);
+}
+
+//recursive function that determines where blank tile is and starts tree / moves blank tile to neighbors
+void Puzzle::searchPuzzle(tile* blankTile, vector<vector<char> > currentPuzzle) {
+
+  int i, j, blankTileIndex = 0;
+
+  //find blank tile
+  for (i = 0; i < 3; ++i) {
+    for (j = 0; j < 3; ++j) {
+      if (currentPuzzle[i][j] != '*') {
+        blankTileIndex++;
+      }
+    }
+  }
+
+  //check if puzzle is goal state
+  if (checkPuzzle(currentPuzzle)) {
+    goalState = true;
+    goalTile = blankTile;
+  }
+  else {
+    minHeap.pop();
+  }
+
+  //FINISH THIS FUNCTION
+
+}
+
+bool Puzzle::checkPuzzle(vector<vector<char> > currentPuzzle) {
+  //hard code the values of the solved puzzle to compare to the current puzzle
+  vector<vector<char> > solvedPuzzle;
+  vector<char> row1 = {1, 2, 3};
+  vector<char> row2 = {4, 5, 6};
+  vector<char> row3 = {7, 8, '*'};
+  solvedPuzzle.push_back(row1);
+  solvedPuzzle.push_back(row2);
+  solvedPuzzle.push_back(row2);
+
+  if (currentPuzzle == solvedPuzzle) {
+    return true;
+  }
+  else {
+    return false;
+  }
+}
+
+
+
+
+
 
 
