@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <queue>
+#include <vector>
 
 using namespace std;
 
@@ -30,16 +32,40 @@ class Puzzle {
   //variables / ADTs used in relation to the puzzle and its tiles
   private:
 
+  //representation of puzzles
+  vector<vector<char> > currPuzzle; 
+
   //root node (where we start)
   tile* root;
 
   //goal node (where we finish)
   tile* goalTile;
 
-  
+  //check if we reached the goal state / finished puzzle
+  bool goalState;
 
+  //user input for search method / heuristic
+  int userSearch;
+
+  //total nodes expanded in the search space
+  int nodesExpanded;
+
+  //total nodes in the priority queue
+  int nodesInQueue;
+
+  //priorty queue to access the lowest heuristic + movementCost node (reference minHeap from cs141 - hw3a
+  //may need to change greater<tile*> with something else that can compare the g(n)+h(n) of different tiles
+  priority_queue<tile*, vector<tile*>, greater<tile*>> minHeap; 
+  
+  //list of all puzzles to compare repeat states (could try to swap out with an array)
+  vector<vector<vector<char>>> visitedPuzzles;
+  
   //functions of the Puzzle class to use private members
   public:
+  Puzzle();
+
+  void makePuzzle(int userInput);
+  
 
 };
 
