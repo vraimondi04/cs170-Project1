@@ -68,6 +68,9 @@ class Puzzle {
   void selectAlgorithm(int userAlgo);
   void searchPuzzle(tile* blankTile, vector<vector<char> > currPuzzle);
   bool checkPuzzle(vector<vector<char> > currPuzzle);
+  void swapTile(tile* blankTile, vector<vector<char> > currPuzzle, int blankTileIndex);
+  void newPuzzle(tile* blankTile, vector<vector<char> > currPuzzle);
+  bool checkHistory(vector<vector<char> > puzzle);
 
 };
 
