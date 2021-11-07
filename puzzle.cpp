@@ -95,7 +95,7 @@ void Puzzle::makePuzzle(int userInput) {
 void Puzzle::selectAlgorithm(int userAlgo) {
   userSearch = userAlgo;
 
-  //would prefer to start this recursive function call in main but the root is a private member of puzzle
+  //root is a private member of puzzle, so begin recursive call here
   searchPuzzle(root, currPuzzle);
 }
 
@@ -122,7 +122,10 @@ void Puzzle::searchPuzzle(tile* blankTile, vector<vector<char> > currentPuzzle) 
     minHeap.pop();
   }
 
-  //FINISH THIS FUNCTION
+  //swap blank tile with one of its neighboring tiles
+  swapTile(blankTile, currentPuzzle, blankTileIndex);
+
+  //add goal state display text and path from root to goal tile if current puzzle is goal state
 
 }
 
@@ -144,7 +147,118 @@ bool Puzzle::checkPuzzle(vector<vector<char> > currentPuzzle) {
   }
 }
 
+void Puzzle::swapTile(tile* blankTile, vector<vector<char> > currentPuzzle, int blankTileIndex) {
 
+  //create tempPuzzles for each neightbor of blank tile
+  vector<vector<char> > tempPuzzle1 = currentPuzzle;
+  vector<vector<char> > tempPuzzle2 = currentPuzzle;
+  vector<vector<char> > tempPuzzle3 = currentPuzzle;
+  vector<vector<char> > tempPuzzle4 = currentPuzzle;
+
+  //Swap tiles and make new puzzles for each option of where the '*' tile is
+  if (blankTileIndex == 0) {
+    swap(tempPuzzle1[0][0], tempPuzzle1[0][1]);
+    newPuzzle(blankTile, currentPuzzle);
+
+    swap(tempPuzzle2[0][0], tempPuzzle2[1][0]);
+    newPuzzle(blankTile, currentPuzzle);
+  } 
+  else if (blankTileIndex == 1) {
+    swap(tempPuzzle1[0][1], tempPuzzle1[0][0]);
+    newPuzzle(blankTile, currentPuzzle);
+
+    swap(tempPuzzle1[0][1], tempPuzzle1[0][2]);
+    newPuzzle(blankTile, currentPuzzle);
+
+    swap(tempPuzzle1[0][1], tempPuzzle1[1][1]);
+    newPuzzle(blankTile, currentPuzzle);
+  }
+  else if (blankTileIndex == 2) {
+    swap(tempPuzzle1[0][2], tempPuzzle1[0][1]);
+    newPuzzle(blankTile, currentPuzzle);
+
+    swap(tempPuzzle1[0][2], tempPuzzle1[1][2]);
+    newPuzzle(blankTile, currentPuzzle);
+  }
+  else if (blankTileIndex == 3) {
+    swap(tempPuzzle1[1][0], tempPuzzle1[0][0]);
+    newPuzzle(blankTile, currentPuzzle);
+
+    swap(tempPuzzle1[1][0], tempPuzzle1[1][1]);
+    newPuzzle(blankTile, currentPuzzle);
+
+    swap(tempPuzzle1[1][0], tempPuzzle1[2][0]);
+    newPuzzle(blankTile, currentPuzzle);
+  }
+  else if (blankTileIndex == 4) {
+    swap(tempPuzzle1[1][1], tempPuzzle1[0][1]);
+    newPuzzle(blankTile, currentPuzzle);
+
+    swap(tempPuzzle1[1][1], tempPuzzle1[1][0]);
+    newPuzzle(blankTile, currentPuzzle);
+
+    swap(tempPuzzle1[1][1], tempPuzzle1[1][2]);
+    newPuzzle(blankTile, currentPuzzle);
+
+    swap(tempPuzzle1[1][1], tempPuzzle1[2][1]);
+    newPuzzle(blankTile, currentPuzzle);
+  }
+  else if (blankTileIndex == 5) {
+    swap(tempPuzzle1[1][2], tempPuzzle1[0][2]);
+    newPuzzle(blankTile, currentPuzzle);
+
+    swap(tempPuzzle1[1][2], tempPuzzle1[1][1]);
+    newPuzzle(blankTile, currentPuzzle);
+
+    swap(tempPuzzle1[1][2], tempPuzzle1[2][2]);
+    newPuzzle(blankTile, currentPuzzle);
+  }
+  else if (blankTileIndex == 6) {
+    swap(tempPuzzle1[2][0], tempPuzzle1[1][0]);
+    newPuzzle(blankTile, currentPuzzle);
+
+    swap(tempPuzzle1[2][0], tempPuzzle1[2][1]);
+    newPuzzle(blankTile, currentPuzzle);
+  }
+  else if (blankTileIndex == 7) {
+    swap(tempPuzzle1[2][1], tempPuzzle1[1][1]);
+    newPuzzle(blankTile, currentPuzzle);
+
+    swap(tempPuzzle1[2][1], tempPuzzle1[2][0]);
+    newPuzzle(blankTile, currentPuzzle);
+
+    swap(tempPuzzle1[2][1], tempPuzzle1[2][2]);
+    newPuzzle(blankTile, currentPuzzle);
+  }
+  else if (blankTileIndex == 8) {
+    swap(tempPuzzle1[2][2], tempPuzzle1[1][2]);
+    newPuzzle(blankTile, currentPuzzle);
+
+    swap(tempPuzzle1[2][2], tempPuzzle1[2][1]);
+    newPuzzle(blankTile, currentPuzzle);
+  }
+}
+
+void Puzzle::newPuzzle(tile* blankTile, vector<vector<char> > currentPuzzle) {
+  tile* tempTile = new tile;
+
+  if (goalState) {
+    return;
+  }
+
+}
+
+//function to check if we've encountered this puzzle before
+bool Puzzle::checkHistory(vector<vector<char> > puzzle) {
+  
+  bool verdict = false;
+  for (int i = 0; i < visitedPuzzles.size(); ++i) {
+    if (puzzle == visitedPuzzles[i]) {
+      verdict = true;
+    }
+  }
+  return verdict;
+}
 
 
 
