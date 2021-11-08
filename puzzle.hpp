@@ -73,7 +73,7 @@ class Puzzle {
   bool checkHistory(vector<vector<char> > puzzle);
   void getNodesInQueue();
   int heuristicAlgo(vector<vector<char> > currentPuzzle);
-
+  void displayPuzzle(tile* blankTitle, vector<vector<char> > currentPuzzle);
 
 };
 
