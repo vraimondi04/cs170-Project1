@@ -158,92 +158,145 @@ void Puzzle::swapTile(tile* blankTile, vector<vector<char> > currentPuzzle, int 
   //Swap tiles and make new puzzles for each option of where the '*' tile is
   if (blankTileIndex == 0) {
     swap(tempPuzzle1[0][0], tempPuzzle1[0][1]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 1);
 
     swap(tempPuzzle2[0][0], tempPuzzle2[1][0]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 1);
   } 
   else if (blankTileIndex == 1) {
     swap(tempPuzzle1[0][1], tempPuzzle1[0][0]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 1);
 
     swap(tempPuzzle1[0][1], tempPuzzle1[0][2]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 2);
 
     swap(tempPuzzle1[0][1], tempPuzzle1[1][1]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 3);
   }
   else if (blankTileIndex == 2) {
     swap(tempPuzzle1[0][2], tempPuzzle1[0][1]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 1);
 
     swap(tempPuzzle1[0][2], tempPuzzle1[1][2]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 2);
   }
   else if (blankTileIndex == 3) {
     swap(tempPuzzle1[1][0], tempPuzzle1[0][0]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 1);
 
     swap(tempPuzzle1[1][0], tempPuzzle1[1][1]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 2);
 
     swap(tempPuzzle1[1][0], tempPuzzle1[2][0]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 3);
   }
   else if (blankTileIndex == 4) {
     swap(tempPuzzle1[1][1], tempPuzzle1[0][1]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 1);
 
     swap(tempPuzzle1[1][1], tempPuzzle1[1][0]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 2);
 
     swap(tempPuzzle1[1][1], tempPuzzle1[1][2]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 3);
 
     swap(tempPuzzle1[1][1], tempPuzzle1[2][1]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 4);
   }
   else if (blankTileIndex == 5) {
     swap(tempPuzzle1[1][2], tempPuzzle1[0][2]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 1);
 
     swap(tempPuzzle1[1][2], tempPuzzle1[1][1]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 2);
 
     swap(tempPuzzle1[1][2], tempPuzzle1[2][2]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 3);
   }
   else if (blankTileIndex == 6) {
     swap(tempPuzzle1[2][0], tempPuzzle1[1][0]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 1);
 
     swap(tempPuzzle1[2][0], tempPuzzle1[2][1]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 2);
   }
   else if (blankTileIndex == 7) {
     swap(tempPuzzle1[2][1], tempPuzzle1[1][1]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 1);
 
     swap(tempPuzzle1[2][1], tempPuzzle1[2][0]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 2);
 
     swap(tempPuzzle1[2][1], tempPuzzle1[2][2]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 3);
   }
   else if (blankTileIndex == 8) {
     swap(tempPuzzle1[2][2], tempPuzzle1[1][2]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 1);
 
     swap(tempPuzzle1[2][2], tempPuzzle1[2][1]);
-    newPuzzle(blankTile, currentPuzzle);
+    newPuzzle(blankTile, currentPuzzle, 2);
   }
 }
 
-void Puzzle::newPuzzle(tile* blankTile, vector<vector<char> > currentPuzzle) {
+void Puzzle::newPuzzle(tile* blankTile, vector<vector<char> > currentPuzzle, int neighbor) {
   tile* tempTile = new tile;
 
   if (goalState) {
     return;
+  }
+
+  //if we have seen this puzzle before
+  if (checkHistory(currentPuzzle)) {
+    if (neighbor == 1) {
+      blankTile -> neighbor1 = NULL;
+    }
+    else if (neighbor == 2) {
+      blankTile -> neighbor2 = NULL;
+    }
+    else if (neighbor == 3) {
+      blankTile -> neighbor3 = NULL;
+    }
+    else if (neighbor == 4) {
+      blankTile -> neighbor4 = NULL;
+    }
+  }
+  //if not seen before, add to list of visited puzzles and update travel
+  else if (!checkHistory(currentPuzzle)) {
+    visitedPuzzles.push_back(currentPuzzle);
+
+    tempTile -> movementCost = blankTile -> movementCost + 1;
+    tempTile -> heuristicVal = heuristicAlgo(currentPuzzle);
+    currPuzzle = currentPuzzle;
+
+    if (neighbor == 1) {
+      blankTile -> neighbor1 = tempTile;
+      blankTile -> neighbor1 -> previousNode = blankTile;
+      minHeap.push(blankTile -> neighbor1);
+    }
+    else if (neighbor == 2) {
+      blankTile -> neighbor2 = tempTile;
+      blankTile -> neighbor2 -> previousNode = blankTile;
+      minHeap.push(blankTile -> neighbor2);
+    }
+    else if (neighbor == 3) {
+      blankTile -> neighbor3 = tempTile;
+      blankTile -> neighbor3 -> previousNode = blankTile;
+      minHeap.push(blankTile -> neighbor3);
+    }
+    else if (neighbor == 4) {
+      blankTile -> neighbor4 = tempTile;
+      blankTile -> neighbor4 -> previousNode = blankTile;
+      minHeap.push(blankTile -> neighbor4);
+    }
+    nodesExpanded++;
+    getNodesInQueue();
+
+    if (checkPuzzle(currentPuzzle)) {
+      goalState = true;
+      goalTile = tempTile;
+      return;
+    }
   }
 
 }
@@ -260,7 +313,57 @@ bool Puzzle::checkHistory(vector<vector<char> > puzzle) {
   return verdict;
 }
 
+//update the member value of nodesInQueue
+void Puzzle::getNodesInQueue() {
+  if (minHeap.size() > nodesInQueue) {
+    nodesInQueue = minHeap.size();
+  }
+}
 
+int Puzzle::heuristicAlgo(vector<vector<char> > currentPuzzle) {
+
+  int heuristic = 0;
+
+  //hard code the values of the solved puzzle - taken from checkPuzzle function above
+  vector<vector<char> > solvedPuzzle;
+  vector<char> row1 = {1, 2, 3};
+  vector<char> row2 = {4, 5, 6};
+  vector<char> row3 = {7, 8, '*'};
+  solvedPuzzle.push_back(row1);
+  solvedPuzzle.push_back(row2);
+  solvedPuzzle.push_back(row2);
+
+  //uniform cost search
+  if (userSearch == 1) {
+    heuristic = 0;
+  }
+  //A* with Misplaced Tile Heuristic
+  else if (userSearch == 2) {
+    for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+        if (currentPuzzle[i][j] != solvedPuzzle[i][j]) {
+          ++heuristic;
+        }
+      }
+    }
+  }
+  //A* with Manhattan Distance Hueristic
+  else if (userSearch == 3) {
+    for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+        for (int x = 0; x < 3; ++x) {
+          for (int y = 0; y < 3; ++y) {
+            if (solvedPuzzle[i][j] == currentPuzzle[x][y]) {
+              heuristic += abs(i - x);
+              heuristic += abs(j - y);
+            }
+          }
+        }
+      }
+    }
+  }
+  return heuristic;
+}
 
 
 
