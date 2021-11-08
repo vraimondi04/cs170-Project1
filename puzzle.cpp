@@ -126,6 +126,22 @@ void Puzzle::searchPuzzle(tile* blankTile, vector<vector<char> > currentPuzzle) 
   swapTile(blankTile, currentPuzzle, blankTileIndex);
 
   //add goal state display text and path from root to goal tile if current puzzle is goal state
+  if (goalState) {
+    while (minHeap.top() != goalTile) {
+      minHeap.pop();
+    }
+    displayPuzzle(minHeap.top(), currentPuzzle);
+    cout << "Goal State!" << endl << "Solution Depth was " << minHeap.top() -> movementCost << endl;
+    cout << "Number of Nodes expanded: " << nodesExpanded << endl;
+    cout << "Max queue size: " << nodesInQueue << endl;
+    return;
+  }
+  else {
+    if (minHeap.top() != NULL) {
+      displayPuzzle(minHeap.top(), currentPuzzle);
+      searchPuzzle(minHeap.top(), currentPuzzle);
+    }
+  }
 
 }
 
@@ -365,5 +381,17 @@ int Puzzle::heuristicAlgo(vector<vector<char> > currentPuzzle) {
   return heuristic;
 }
 
+void Puzzle::displayPuzzle(tile* blankTile, vector<vector<char> > currentPuzzle) {
+  
+  if (blankTile != root) {
+    cout << "The best state to expand with a g(n) = " << blankTile -> movementCost << "and h(n) = " << blankTile -> heuristicVal << "is:" << endl;
+  }
 
-
+  for (int i = 0; i < 3; ++i) {
+    for (int j = 0; j < 3; ++j) {
+      cout << currentPuzzle[i][j] << " ";
+    }
+    cout << endl;
+  }
+  cout << endl;
+}
