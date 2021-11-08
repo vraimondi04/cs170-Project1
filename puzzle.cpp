@@ -48,14 +48,15 @@ void Puzzle::makePuzzle(int userInput) {
     row3.push_back('7');
     row3.push_back('8');
 
+    currPuzzle.push_back(row1);
+    currPuzzle.push_back(row2);
+    currPuzzle.push_back(row3);
     
     //CHECK IF MINHEAP IS WORKING WITH THE GREATER<TILE*>
     root = t;
     minHeap.push(root);
-
-    currPuzzle.push_back(row1);
-    currPuzzle.push_back(row2);
-    currPuzzle.push_back(row3);
+      
+    displayPuzzle(root, currPuzzle);
 
     visitedPuzzles.push_back(currPuzzle);
   }
@@ -96,25 +97,29 @@ void Puzzle::selectAlgorithm(int userAlgo) {
   userSearch = userAlgo;
 
   //root is a private member of puzzle, so begin recursive call here
-  searchPuzzle(root, currPuzzle);
+  searchPuzzle(root);
 }
 
 //recursive function that determines where blank tile is and starts tree / moves blank tile to neighbors
-void Puzzle::searchPuzzle(tile* blankTile, vector<vector<char> > currentPuzzle) {
+void Puzzle::searchPuzzle(tile* blankTile) {
 
-  int i, j, blankTileIndex = 0;
+  int i, j, counter = 0;
+  int blankTileIndex = 0;
 
   //find blank tile
   for (i = 0; i < 3; ++i) {
     for (j = 0; j < 3; ++j) {
-      if (currentPuzzle[i][j] != '*') {
-        blankTileIndex++;
+      if (currPuzzle[i][j] != '*') {
+        counter++;
+      }
+      else if (currPuzzle[i][j] == '*') {
+          blankTileIndex = counter;
       }
     }
   }
 
   //check if puzzle is goal state
-  if (checkPuzzle(currentPuzzle)) {
+  if (checkPuzzle(currPuzzle)) {
     goalState = true;
     goalTile = blankTile;
   }
@@ -122,24 +127,24 @@ void Puzzle::searchPuzzle(tile* blankTile, vector<vector<char> > currentPuzzle) 
     minHeap.pop();
   }
 
-  //swap blank tile with one of its neighboring tiles
-  swapTile(blankTile, currentPuzzle, blankTileIndex);
-
   //add goal state display text and path from root to goal tile if current puzzle is goal state
   if (goalState) {
     while (minHeap.top() != goalTile) {
       minHeap.pop();
     }
-    displayPuzzle(minHeap.top(), currentPuzzle);
+    displayPuzzle(minHeap.top(), currPuzzle);
     cout << "Goal State!" << endl << "Solution Depth was " << minHeap.top() -> movementCost << endl;
     cout << "Number of Nodes expanded: " << nodesExpanded << endl;
     cout << "Max queue size: " << nodesInQueue << endl;
     return;
   }
   else {
+    //swap blank tile with one of its neighboring tiles
+    swapTile(blankTile, currPuzzle, blankTileIndex);
+    
     if (minHeap.top() != NULL) {
-      displayPuzzle(minHeap.top(), currentPuzzle);
-      searchPuzzle(minHeap.top(), currentPuzzle);
+      displayPuzzle(minHeap.top(), currPuzzle);
+      searchPuzzle(minHeap.top());
     }
   }
 
@@ -148,12 +153,15 @@ void Puzzle::searchPuzzle(tile* blankTile, vector<vector<char> > currentPuzzle) 
 bool Puzzle::checkPuzzle(vector<vector<char> > currentPuzzle) {
   //hard code the values of the solved puzzle to compare to the current puzzle
   vector<vector<char> > solvedPuzzle;
-  vector<char> row1 = {1, 2, 3};
-  vector<char> row2 = {4, 5, 6};
-  vector<char> row3 = {7, 8, '*'};
+  static const char arr1[] = {'1', '2', '3'};
+  static const char arr2[] = {'4', '5', '6'};
+  static const char arr3[] = {'7', '8', '*'};
+  vector<char> row1 (arr1, arr1 + sizeof(arr1) / sizeof(arr1[0]));
+  vector<char> row2 (arr2, arr2 + sizeof(arr2) / sizeof(arr2[0]));
+  vector<char> row3 (arr3, arr3 + sizeof(arr3) / sizeof(arr3[0]));
   solvedPuzzle.push_back(row1);
   solvedPuzzle.push_back(row2);
-  solvedPuzzle.push_back(row2);
+  solvedPuzzle.push_back(row3);
 
   if (currentPuzzle == solvedPuzzle) {
     return true;
@@ -166,104 +174,140 @@ bool Puzzle::checkPuzzle(vector<vector<char> > currentPuzzle) {
 void Puzzle::swapTile(tile* blankTile, vector<vector<char> > currentPuzzle, int blankTileIndex) {
 
   //create tempPuzzles for each neightbor of blank tile
-  vector<vector<char> > tempPuzzle1 = currentPuzzle;
-  vector<vector<char> > tempPuzzle2 = currentPuzzle;
-  vector<vector<char> > tempPuzzle3 = currentPuzzle;
-  vector<vector<char> > tempPuzzle4 = currentPuzzle;
+  vector<vector<char> > tempPuzzle1 = currPuzzle;
+  vector<vector<char> > tempPuzzle2 = currPuzzle;
+  vector<vector<char> > tempPuzzle3 = currPuzzle;
+  vector<vector<char> > tempPuzzle4 = currPuzzle;
 
   //Swap tiles and make new puzzles for each option of where the '*' tile is
   if (blankTileIndex == 0) {
     swap(tempPuzzle1[0][0], tempPuzzle1[0][1]);
-    newPuzzle(blankTile, currentPuzzle, 1);
+    newPuzzle(blankTile, tempPuzzle1, 1);
 
     swap(tempPuzzle2[0][0], tempPuzzle2[1][0]);
-    newPuzzle(blankTile, currentPuzzle, 1);
-  } 
+    newPuzzle(blankTile, tempPuzzle2, 2);
+  }
   else if (blankTileIndex == 1) {
     swap(tempPuzzle1[0][1], tempPuzzle1[0][0]);
-    newPuzzle(blankTile, currentPuzzle, 1);
+    newPuzzle(blankTile, tempPuzzle1, 1);
 
-    swap(tempPuzzle1[0][1], tempPuzzle1[0][2]);
-    newPuzzle(blankTile, currentPuzzle, 2);
+    swap(tempPuzzle2[0][1], tempPuzzle2[0][2]);
+    newPuzzle(blankTile, tempPuzzle2, 2);
 
-    swap(tempPuzzle1[0][1], tempPuzzle1[1][1]);
-    newPuzzle(blankTile, currentPuzzle, 3);
+    swap(tempPuzzle3[0][1], tempPuzzle3[1][1]);
+    newPuzzle(blankTile, tempPuzzle3, 3);
   }
   else if (blankTileIndex == 2) {
     swap(tempPuzzle1[0][2], tempPuzzle1[0][1]);
-    newPuzzle(blankTile, currentPuzzle, 1);
+    newPuzzle(blankTile, tempPuzzle1, 1);
 
-    swap(tempPuzzle1[0][2], tempPuzzle1[1][2]);
-    newPuzzle(blankTile, currentPuzzle, 2);
+    swap(tempPuzzle2[0][2], tempPuzzle2[1][2]);
+    newPuzzle(blankTile, tempPuzzle2, 2);
   }
   else if (blankTileIndex == 3) {
     swap(tempPuzzle1[1][0], tempPuzzle1[0][0]);
-    newPuzzle(blankTile, currentPuzzle, 1);
+    newPuzzle(blankTile, tempPuzzle1, 1);
 
-    swap(tempPuzzle1[1][0], tempPuzzle1[1][1]);
-    newPuzzle(blankTile, currentPuzzle, 2);
+    swap(tempPuzzle2[1][0], tempPuzzle2[1][1]);
+    newPuzzle(blankTile, tempPuzzle2, 2);
 
-    swap(tempPuzzle1[1][0], tempPuzzle1[2][0]);
-    newPuzzle(blankTile, currentPuzzle, 3);
+    swap(tempPuzzle3[1][0], tempPuzzle3[2][0]);
+    newPuzzle(blankTile, tempPuzzle3, 3);
   }
   else if (blankTileIndex == 4) {
     swap(tempPuzzle1[1][1], tempPuzzle1[0][1]);
-    newPuzzle(blankTile, currentPuzzle, 1);
+    newPuzzle(blankTile, tempPuzzle1, 1);
 
-    swap(tempPuzzle1[1][1], tempPuzzle1[1][0]);
-    newPuzzle(blankTile, currentPuzzle, 2);
+    swap(tempPuzzle2[1][1], tempPuzzle2[1][0]);
+    newPuzzle(blankTile, tempPuzzle2, 2);
 
-    swap(tempPuzzle1[1][1], tempPuzzle1[1][2]);
-    newPuzzle(blankTile, currentPuzzle, 3);
+    swap(tempPuzzle3[1][1], tempPuzzle3[1][2]);
+    newPuzzle(blankTile, tempPuzzle3, 3);
 
-    swap(tempPuzzle1[1][1], tempPuzzle1[2][1]);
-    newPuzzle(blankTile, currentPuzzle, 4);
+    swap(tempPuzzle4[1][1], tempPuzzle4[2][1]);
+    newPuzzle(blankTile, tempPuzzle4, 4);
   }
   else if (blankTileIndex == 5) {
     swap(tempPuzzle1[1][2], tempPuzzle1[0][2]);
-    newPuzzle(blankTile, currentPuzzle, 1);
+    newPuzzle(blankTile, tempPuzzle1, 1);
 
-    swap(tempPuzzle1[1][2], tempPuzzle1[1][1]);
-    newPuzzle(blankTile, currentPuzzle, 2);
+    swap(tempPuzzle2[1][2], tempPuzzle2[1][1]);
+    newPuzzle(blankTile, tempPuzzle2, 2);
 
-    swap(tempPuzzle1[1][2], tempPuzzle1[2][2]);
-    newPuzzle(blankTile, currentPuzzle, 3);
+    swap(tempPuzzle3[1][2], tempPuzzle3[2][2]);
+    newPuzzle(blankTile, tempPuzzle3, 3);
   }
   else if (blankTileIndex == 6) {
     swap(tempPuzzle1[2][0], tempPuzzle1[1][0]);
-    newPuzzle(blankTile, currentPuzzle, 1);
+    newPuzzle(blankTile, tempPuzzle1, 1);
 
-    swap(tempPuzzle1[2][0], tempPuzzle1[2][1]);
-    newPuzzle(blankTile, currentPuzzle, 2);
+    swap(tempPuzzle2[2][0], tempPuzzle2[2][1]);
+    newPuzzle(blankTile, tempPuzzle2, 2);
   }
   else if (blankTileIndex == 7) {
     swap(tempPuzzle1[2][1], tempPuzzle1[1][1]);
-    newPuzzle(blankTile, currentPuzzle, 1);
+    newPuzzle(blankTile, tempPuzzle1, 1);
 
-    swap(tempPuzzle1[2][1], tempPuzzle1[2][0]);
-    newPuzzle(blankTile, currentPuzzle, 2);
+    swap(tempPuzzle2[2][1], tempPuzzle2[2][0]);
+    newPuzzle(blankTile, tempPuzzle2, 2);
 
-    swap(tempPuzzle1[2][1], tempPuzzle1[2][2]);
-    newPuzzle(blankTile, currentPuzzle, 3);
+    swap(tempPuzzle3[2][1], tempPuzzle3[2][2]);
+    newPuzzle(blankTile, tempPuzzle3, 3);
   }
   else if (blankTileIndex == 8) {
     swap(tempPuzzle1[2][2], tempPuzzle1[1][2]);
-    newPuzzle(blankTile, currentPuzzle, 1);
+    newPuzzle(blankTile, tempPuzzle1, 1);
 
-    swap(tempPuzzle1[2][2], tempPuzzle1[2][1]);
-    newPuzzle(blankTile, currentPuzzle, 2);
+    swap(tempPuzzle2[2][2], tempPuzzle2[2][1]);
+    newPuzzle(blankTile, tempPuzzle2, 2);
   }
 }
 
-void Puzzle::newPuzzle(tile* blankTile, vector<vector<char> > currentPuzzle, int neighbor) {
+void Puzzle::newPuzzle(tile* blankTile, vector<vector<char> > tempPuzzle, int neighbor) {
   tile* tempTile = new tile;
 
   if (goalState) {
     return;
   }
 
+  if (checkPuzzle(tempPuzzle)) {
+    goalState = true;
+      
+    visitedPuzzles.push_back(tempPuzzle);
+
+    tempTile -> movementCost = blankTile -> movementCost + 1;
+    tempTile -> heuristicVal = heuristicAlgo(tempPuzzle);
+    currPuzzle = tempPuzzle;
+
+    if (neighbor == 1) {
+    blankTile -> neighbor1 = tempTile;
+    blankTile -> neighbor1 -> previousNode = blankTile;
+    minHeap.push(blankTile -> neighbor1);
+    }
+    else if (neighbor == 2) {
+    blankTile -> neighbor2 = tempTile;
+    blankTile -> neighbor2 -> previousNode = blankTile;
+    minHeap.push(blankTile -> neighbor2);
+    }
+    else if (neighbor == 3) {
+    blankTile -> neighbor3 = tempTile;
+    blankTile -> neighbor3 -> previousNode = blankTile;
+    minHeap.push(blankTile -> neighbor3);
+    }
+    else if (neighbor == 4) {
+    blankTile -> neighbor4 = tempTile;
+    blankTile -> neighbor4 -> previousNode = blankTile;
+    minHeap.push(blankTile -> neighbor4);
+    }
+    nodesExpanded++;
+    getNodesInQueue();
+      
+    goalTile = tempTile;
+    return;
+    }
+
   //if we have seen this puzzle before
-  if (checkHistory(currentPuzzle)) {
+  if (checkHistory(tempPuzzle)) {
     if (neighbor == 1) {
       blankTile -> neighbor1 = NULL;
     }
@@ -278,12 +322,12 @@ void Puzzle::newPuzzle(tile* blankTile, vector<vector<char> > currentPuzzle, int
     }
   }
   //if not seen before, add to list of visited puzzles and update travel
-  else if (!checkHistory(currentPuzzle)) {
-    visitedPuzzles.push_back(currentPuzzle);
+  else if (!checkHistory(tempPuzzle)) {
+    visitedPuzzles.push_back(tempPuzzle);
 
     tempTile -> movementCost = blankTile -> movementCost + 1;
-    tempTile -> heuristicVal = heuristicAlgo(currentPuzzle);
-    currPuzzle = currentPuzzle;
+    tempTile -> heuristicVal = heuristicAlgo(tempPuzzle);
+    currPuzzle = tempPuzzle;
 
     if (neighbor == 1) {
       blankTile -> neighbor1 = tempTile;
@@ -308,11 +352,6 @@ void Puzzle::newPuzzle(tile* blankTile, vector<vector<char> > currentPuzzle, int
     nodesExpanded++;
     getNodesInQueue();
 
-    if (checkPuzzle(currentPuzzle)) {
-      goalState = true;
-      goalTile = tempTile;
-      return;
-    }
   }
 
 }
@@ -342,12 +381,15 @@ int Puzzle::heuristicAlgo(vector<vector<char> > currentPuzzle) {
 
   //hard code the values of the solved puzzle - taken from checkPuzzle function above
   vector<vector<char> > solvedPuzzle;
-  vector<char> row1 = {1, 2, 3};
-  vector<char> row2 = {4, 5, 6};
-  vector<char> row3 = {7, 8, '*'};
+  static const char arr1[] = {'1', '2', '3'};
+  static const char arr2[] = {'4', '5', '6'};
+  static const char arr3[] = {'7', '8', '*'};
+  vector<char> row1 (arr1, arr1 + sizeof(arr1) / sizeof(arr1[0]));
+  vector<char> row2 (arr2, arr2 + sizeof(arr2) / sizeof(arr2[0]));
+  vector<char> row3 (arr3, arr3 + sizeof(arr3) / sizeof(arr3[0]));
   solvedPuzzle.push_back(row1);
   solvedPuzzle.push_back(row2);
-  solvedPuzzle.push_back(row2);
+  solvedPuzzle.push_back(row3);
 
   //uniform cost search
   if (userSearch == 1) {
@@ -384,7 +426,7 @@ int Puzzle::heuristicAlgo(vector<vector<char> > currentPuzzle) {
 void Puzzle::displayPuzzle(tile* blankTile, vector<vector<char> > currentPuzzle) {
   
   if (blankTile != root) {
-    cout << "The best state to expand with a g(n) = " << blankTile -> movementCost << "and h(n) = " << blankTile -> heuristicVal << "is:" << endl;
+    cout << "The best state to expand with a g(n) = " << blankTile -> movementCost << " and h(n) = " << blankTile -> heuristicVal << " is:" << endl;
   }
 
   for (int i = 0; i < 3; ++i) {
