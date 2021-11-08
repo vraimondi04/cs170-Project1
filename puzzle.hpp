@@ -27,6 +27,17 @@ struct tile {
 
 };
 
+//create the minHeap in the priority_queue - referenced the greater<> documentation in c++
+class Tile_Sort {
+public:
+    bool operator()(tile* t1, tile* t2)
+    {
+       if ((t1 -> movementCost + t1 -> heuristicVal) > (t2 -> movementCost + t2 -> heuristicVal)) return true;
+       return false;
+    }
+};
+
+
 class Puzzle {
   
   //variables / ADTs used in relation to the puzzle and its tiles
@@ -55,7 +66,7 @@ class Puzzle {
 
   //priorty queue to access the lowest heuristic + movementCost node (reference minHeap from cs141 - hw3a
   //may need to change greater<tile*> with something else that can compare the g(n)+h(n) of different tiles
-  priority_queue<tile*, vector<tile*>, greater<tile*>> minHeap; 
+  priority_queue<tile*, vector<tile*>, Tile_Sort> minHeap;
   
   //list of all puzzles to compare repeat states (could try to swap out with an array)
   vector<vector<vector<char>>> visitedPuzzles;
@@ -66,7 +77,7 @@ class Puzzle {
 
   void makePuzzle(int userInput);
   void selectAlgorithm(int userAlgo);
-  void searchPuzzle(tile* blankTile, vector<vector<char> > currPuzzle);
+  void searchPuzzle(tile* blankTile);
   bool checkPuzzle(vector<vector<char> > currPuzzle);
   void swapTile(tile* blankTile, vector<vector<char> > currPuzzle, int blankTileIndex);
   void newPuzzle(tile* blankTile, vector<vector<char> > currPuzzle, int neighbor);
