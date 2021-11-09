@@ -41,7 +41,6 @@ public:
     }
 };
 
-
 class Puzzle {
   
   //variables / ADTs used in relation to the puzzle and its tiles
@@ -89,7 +88,7 @@ class Puzzle {
   void getNodesInQueue();
   int heuristicAlgo(vector<vector<char> > currentPuzzle);
   void displayPuzzle(tile* blankTitle, vector<vector<char> > currentPuzzle);
-
+  int findDistance(vector<vector<char> > tempPuzzle);
 };
 
 #endif /* _PUZZLE_H_ */
