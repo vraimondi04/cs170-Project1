@@ -30,10 +30,14 @@ struct tile {
 //create the minHeap in the priority_queue - referenced the greater<> documentation in c++
 class Tile_Sort {
 public:
-    bool operator()(tile* t1, tile* t2)
+    bool operator()(tile* tile1, tile* tile2)
     {
-       if ((t1 -> movementCost + t1 -> heuristicVal) > (t2 -> movementCost + t2 -> heuristicVal)) return true;
-       return false;
+        if ((tile1 -> movementCost + tile1 -> heuristicVal) > (tile2 -> movementCost + tile2 -> heuristicVal)) {
+          return true;
+        }
+        else {
+          return false;
+        }
     }
 };
 
