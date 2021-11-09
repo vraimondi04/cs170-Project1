@@ -50,7 +50,7 @@ void Puzzle::makePuzzle(int userInput) {
     currPuzzle.push_back(row2);
     currPuzzle.push_back(row3);
     
-    //CHECK IF MINHEAP IS WORKING WITH THE GREATER<TILE*>
+    //Min-heap is working with the Tile_Sort implementation (updated greater<>)
     root = t;
     minHeap.push(root);
       
@@ -78,7 +78,7 @@ void Puzzle::makePuzzle(int userInput) {
     row3.push_back(val2);
     row3.push_back(val3);
 
-    //CHECK IF MINHEAP IS WORKING WITH THE GREATER<TILE*>
+    //Min-heap is working with the Tile_Sort implementation (updated greater<>)
     root = t;
     minHeap.push(root);
 
@@ -148,6 +148,7 @@ void Puzzle::searchPuzzle(tile* blankTile) {
 
 }
 
+//bool function to check if puzzle is at the goal state
 bool Puzzle::checkPuzzle(vector<vector<char> > currentPuzzle) {
   //hard code the values of the solved puzzle to compare to the current puzzle
   vector<vector<char> > solvedPuzzle;
@@ -169,9 +170,10 @@ bool Puzzle::checkPuzzle(vector<vector<char> > currentPuzzle) {
   }
 }
 
+//swap the blank tile with one of its neighbors
 void Puzzle::swapTile(tile* blankTile, vector<vector<char> > currentPuzzle, int blankTileIndex) {
 
-  //create tempPuzzles for each neightbor of blank tile
+  //create tempPuzzles for each potential neightbor of blank tile
   vector<vector<char> > tempPuzzle1 = currPuzzle;
   vector<vector<char> > tempPuzzle2 = currPuzzle;
   vector<vector<char> > tempPuzzle3 = currPuzzle;
@@ -261,6 +263,7 @@ void Puzzle::swapTile(tile* blankTile, vector<vector<char> > currentPuzzle, int 
   }
 }
 
+//from the swapTile function, we now update the member variables of the new puzzle and tile
 void Puzzle::newPuzzle(tile* blankTile, vector<vector<char> > tempPuzzle, int neighbor) {
   tile* tempTile = new tile;
 
@@ -268,15 +271,16 @@ void Puzzle::newPuzzle(tile* blankTile, vector<vector<char> > tempPuzzle, int ne
     return;
   }
 
+  //check if puzzle is goal state and if so, still continue to add it to list of visited puzzles and update blank tile variables
   if (checkPuzzle(tempPuzzle)) {
     goalState = true;
       
     visitedPuzzles.push_back(tempPuzzle);
-
-    tempTile -> movementCost = blankTile -> movementCost + 1;
-    tempTile -> heuristicVal = heuristicAlgo(tempPuzzle);
+    
+    tempTile -> movementCost = heuristicAlgo(tempPuzzle);
+    tempTile -> heuristicVal = findDistance(tempPuzzle);
     currPuzzle = tempPuzzle;
-
+    
     if (neighbor == 1) {
     blankTile -> neighbor1 = tempTile;
     blankTile -> neighbor1 -> previousNode = blankTile;
@@ -297,6 +301,7 @@ void Puzzle::newPuzzle(tile* blankTile, vector<vector<char> > tempPuzzle, int ne
     blankTile -> neighbor4 -> previousNode = blankTile;
     minHeap.push(blankTile -> neighbor4);
     }
+    
     nodesExpanded++;
     getNodesInQueue();
       
@@ -323,8 +328,8 @@ void Puzzle::newPuzzle(tile* blankTile, vector<vector<char> > tempPuzzle, int ne
   else if (!checkHistory(tempPuzzle)) {
     visitedPuzzles.push_back(tempPuzzle);
 
-    tempTile -> movementCost = blankTile -> movementCost + 1;
-    tempTile -> heuristicVal = heuristicAlgo(tempPuzzle);
+    tempTile -> movementCost = heuristicAlgo(tempPuzzle);
+    tempTile -> heuristicVal = findDistance(tempPuzzle);
     currPuzzle = tempPuzzle;
 
     if (neighbor == 1) {
@@ -366,13 +371,14 @@ bool Puzzle::checkHistory(vector<vector<char> > puzzle) {
   return verdict;
 }
 
-//update the member value of nodesInQueue
+//update the member value of nodesInQueue with every new puzzle created recursively through swapTile and newPuzzle
 void Puzzle::getNodesInQueue() {
   if (minHeap.size() > nodesInQueue) {
     nodesInQueue = minHeap.size();
   }
 }
 
+//calculate the heuristic based on the type of algorithm that is requested by the user
 int Puzzle::heuristicAlgo(vector<vector<char> > currentPuzzle) {
 
   int heuristic = 0;
@@ -421,6 +427,7 @@ int Puzzle::heuristicAlgo(vector<vector<char> > currentPuzzle) {
   return heuristic;
 }
 
+//display puzzle to user
 void Puzzle::displayPuzzle(tile* blankTile, vector<vector<char> > currentPuzzle) {
   
   if (blankTile != root) {
@@ -434,4 +441,34 @@ void Puzzle::displayPuzzle(tile* blankTile, vector<vector<char> > currentPuzzle)
     cout << endl;
   }
   cout << endl;
+}
+
+int Puzzle::findDistance(vector<vector<char> > tempPuzzle) {
+    int h = 0;
+    
+    vector<vector<char> > solvedPuzzle;
+    static const char arr1[] = {'1', '2', '3'};
+    static const char arr2[] = {'4', '5', '6'};
+    static const char arr3[] = {'7', '8', '*'};
+    vector<char> row1 (arr1, arr1 + sizeof(arr1) / sizeof(arr1[0]));
+    vector<char> row2 (arr2, arr2 + sizeof(arr2) / sizeof(arr2[0]));
+    vector<char> row3 (arr3, arr3 + sizeof(arr3) / sizeof(arr3[0]));
+    solvedPuzzle.push_back(row1);
+    solvedPuzzle.push_back(row2);
+    solvedPuzzle.push_back(row3);
+    
+    for (int i = 0; i < 3; ++i) {
+      for (int j = 0; j < 3; ++j) {
+        if (tempPuzzle[i][j] != solvedPuzzle[i][j]) {
+          ++h;
+        }
+      }
+    }
+    
+    if (tempPuzzle != solvedPuzzle) {
+      return h - 1;
+    }
+    else {
+      return h;
+    }
 }
