@@ -26,8 +26,6 @@ void Puzzle::makePuzzle(int userInput) {
   nodesExpanded = 0;
   nodesInQueue = 0;
 
-  
-
   //puzzle tiles - think of adjacency matrix but with vectors
   vector<char> row1;
   vector<char> row2;
